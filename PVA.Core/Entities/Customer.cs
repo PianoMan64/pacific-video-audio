@@ -22,4 +22,5 @@ public class Customer : BaseEntity
     public List<Address> Addresses { get; set; } = new();
     public List<CartItem> CartItems { get; set; } = new();
     public List<ProductReview> Reviews { get; set; } = new();
+    public List<ServiceBooking> ServiceBookings { get; set; } = new();
 }
