@@ -11,4 +11,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PVA.Application\PVA.Application.csproj" />
+    <ProjectReference Include="..\PVA.Infrastructure\PVA.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
