@@ -1,0 +1,106 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="/images/logo.png" alt="Pacific Video & Audio" class="logo" />
+                    <span class="brand-text">Pacific Video & Audio</span>
+                </a>
+                
+                <div class="nav-menu">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/products" class="nav-link">Products</a>
+                    <a href="/packages" class="nav-link">Packages</a>
+                    <a href="/services" class="nav-link">Services</a>
+                    <a href="/tutorials" class="nav-link">Tutorials</a>
+                    <a href="/support" class="nav-link">Support</a>
+                    <a href="/contact" class="nav-link">Contact</a>
+                </div>
+
+                <div class="nav-actions">
+                    <a href="/account" class="nav-action">
+                        <i class="icon-user"></i>
+                        <span>Account</span>
+                    </a>
+                    <a href="/cart" class="nav-action cart-link">
+                        <i class="icon-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+
+                <button class="mobile-menu-toggle" type="button">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        @Body
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Pacific Video & Audio</h3>
+                    <p>Your trusted partner for professional video and audio solutions.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">Facebook</a>
+                        <a href="#" class="social-link">Instagram</a>
+                        <a href="#" class="social-link">YouTube</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="/products/video">Video Equipment</a></li>
+                        <li><a href="/products/audio">Audio Equipment</a></li>
+                        <li><a href="/packages">Equipment Packages</a></li>
+                        <li><a href="/products/accessories">Accessories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="/services/installation">Installation</a></li>
+                        <li><a href="/services/training">Equipment Training</a></li>
+                        <li><a href="/services/support">Technical Support</a></li>
+                        <li><a href="/services/maintenance">Maintenance</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/support">Help Center</a></li>
+                        <li><a href="/tutorials">Video Tutorials</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/warranty">Warranty Info</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Pacific Video & Audio. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/privacy">Privacy Policy</a>
+                    <a href="/terms">Terms of Service</a>
+                    <a href="/returns">Return Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

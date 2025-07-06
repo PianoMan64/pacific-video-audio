@@ -1,0 +1,271 @@
+@page "/services"
+
+<PageTitle>Services - Pacific Video & Audio</PageTitle>
+
+<section class="page-header">
+    <div class="container">
+        <h1>Our Services</h1>
+        <p>Complete solutions from consultation to ongoing support</p>
+    </div>
+</section>
+
+<section class="services-section">
+    <div class="container">
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🎯</div>
+                <h3>Consultation & Planning</h3>
+                <p>Expert advice to help you choose the right equipment for your specific needs, budget, and goals.</p>
+                <ul>
+                    <li>Needs assessment</li>
+                    <li>Budget planning</li>
+                    <li>Equipment recommendations</li>
+                    <li>Space planning</li>
+                </ul>
+                <a href="/contact" class="btn btn-outline">Schedule Consultation</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <h3>Professional Installation</h3>
+                <p>Certified technicians ensure your equipment is properly installed, configured, and optimized for peak performance.</p>
+                <ul>
+                    <li>Equipment setup</li>
+                    <li>Cable management</li>
+                    <li>System configuration</li>
+                    <li>Performance testing</li>
+                </ul>
+                <a href="/contact" class="btn btn-outline">Book Installation</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🎓</div>
+                <h3>Training & Education</h3>
+                <p>Comprehensive training programs to help you and your team get the most out of your equipment investment.</p>
+                <ul>
+                    <li>Equipment operation</li>
+                    <li>Best practices</li>
+                    <li>Troubleshooting</li>
+                    <li>Ongoing education</li>
+                </ul>
+                <a href="/contact" class="btn btn-outline">View Training Options</a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🛠️</div>
+                <h3>Technical Support</h3>
+                <p>Ongoing technical support and maintenance to keep your equipment running smoothly and efficiently.</p>
+                <ul>
+                    <li>24/7 support hotline</li>
+                    <li>Remote diagnostics</li>
+                    <li>On-site service</li>
+                    <li>Preventive maintenance</li>
+                </ul>
+                <a href="/support" class="btn btn-outline">Get Support</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="service-packages-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Service Packages</h2>
+            <p>Choose the level of support that's right for you</p>
+        </div>
+        
+        <div class="service-packages-grid">
+            <div class="service-package-card">
+                <h3>Basic Support</h3>
+                <div class="package-price">$99/month</div>
+                <ul>
+                    <li>Email support</li>
+                    <li>Online resources</li>
+                    <li>Software updates</li>
+                </ul>
+                <a href="/contact" class="btn btn-primary">Choose Basic</a>
+            </div>
+            
+            <div class="service-package-card featured">
+                <div class="package-badge">Recommended</div>
+                <h3>Professional Support</h3>
+                <div class="package-price">$199/month</div>
+                <ul>
+                    <li>Priority phone support</li>
+                    <li>Remote diagnostics</li>
+                    <li>Quarterly check-ups</li>
+                    <li>Training updates</li>
+                </ul>
+                <a href="/contact" class="btn btn-primary">Choose Professional</a>
+            </div>
+            
+            <div class="service-package-card">
+                <h3>Enterprise Support</h3>
+                <div class="package-price">$399/month</div>
+                <ul>
+                    <li>24/7 dedicated support</li>
+                    <li>On-site service</li>
+                    <li>Custom training</li>
+                    <li>Equipment replacement</li>
+                </ul>
+                <a href="/contact" class="btn btn-primary">Contact Sales</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .page-header {
+        background: #2c3e50;
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        color: #bdc3c7;
+    }
+    
+    .services-section {
+        padding: 4rem 0;
+    }
+    
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .service-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .service-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .service-card h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .service-card p {
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+    }
+    
+    .service-card ul {
+        list-style: none;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+    
+    .service-card ul li {
+        padding: 0.3rem 0;
+        color: #7f8c8d;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .service-card ul li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    
+    .service-packages-section {
+        background: #f8f9fa;
+        padding: 4rem 0;
+    }
+    
+    .service-packages-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .service-package-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+    
+    .service-package-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .service-package-card.featured {
+        border: 3px solid #e74c3c;
+        transform: scale(1.05);
+    }
+    
+    .package-badge {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #e74c3c;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    
+    .service-package-card h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .package-price {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #e74c3c;
+        margin-bottom: 1.5rem;
+    }
+    
+    .service-package-card ul {
+        list-style: none;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+    
+    .service-package-card ul li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .service-package-card ul li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #27ae60;
+        font-weight: bold;
+    }
+</style>

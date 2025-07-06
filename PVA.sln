@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVA", "PVA\PVA.csproj", "{9CC291F8-3858-2660-2A2A-A3BCC60BCB96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVA.Client", "PVA.Client\PVA.Client.csproj", "{9064A818-8C5B-B917-C0AE-C805E5E849CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CC291F8-3858-2660-2A2A-A3BCC60BCB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC291F8-3858-2660-2A2A-A3BCC60BCB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC291F8-3858-2660-2A2A-A3BCC60BCB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC291F8-3858-2660-2A2A-A3BCC60BCB96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9064A818-8C5B-B917-C0AE-C805E5E849CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9064A818-8C5B-B917-C0AE-C805E5E849CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9064A818-8C5B-B917-C0AE-C805E5E849CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9064A818-8C5B-B917-C0AE-C805E5E849CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9C34AA4-CC84-4192-88E6-3E919AF36E71}
+	EndGlobalSection
+EndGlobal

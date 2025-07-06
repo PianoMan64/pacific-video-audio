@@ -1,0 +1,171 @@
+@page "/packages"
+
+<PageTitle>Equipment Packages - Pacific Video & Audio</PageTitle>
+
+<section class="page-header">
+    <div class="container">
+        <h1>Equipment Packages</h1>
+        <p>Carefully curated packages for every budget and need</p>
+    </div>
+</section>
+
+<section class="packages-section">
+    <div class="container">
+        <div class="packages-grid">
+            <div class="package-card">
+                <div class="package-header">
+                    <h3>Starter Package</h3>
+                    <div class="package-price">$1,999</div>
+                </div>
+                <div class="package-content">
+                    <ul class="package-features">
+                        <li>Basic Video Camera</li>
+                        <li>Wireless Microphone System</li>
+                        <li>Tripod & Basic Accessories</li>
+                        <li>Basic Installation</li>
+                        <li>2 Hours Training</li>
+                    </ul>
+                    <a href="/contact" class="btn btn-primary btn-lg">Get Started</a>
+                </div>
+            </div>
+            
+            <div class="package-card featured">
+                <div class="package-badge">Most Popular</div>
+                <div class="package-header">
+                    <h3>Professional Package</h3>
+                    <div class="package-price">$4,999</div>
+                </div>
+                <div class="package-content">
+                    <ul class="package-features">
+                        <li>Professional Video Camera</li>
+                        <li>Audio Mixing Console</li>
+                        <li>Multiple Microphone Setup</li>
+                        <li>Professional Installation</li>
+                        <li>8 Hours Training</li>
+                        <li>6 Months Support</li>
+                    </ul>
+                    <a href="/contact" class="btn btn-primary btn-lg">Choose Professional</a>
+                </div>
+            </div>
+            
+            <div class="package-card">
+                <div class="package-header">
+                    <h3>Enterprise Package</h3>
+                    <div class="package-price">$9,999+</div>
+                </div>
+                <div class="package-content">
+                    <ul class="package-features">
+                        <li>Complete Studio Setup</li>
+                        <li>Multi-Camera System</li>
+                        <li>Professional Audio Suite</li>
+                        <li>Full Installation & Setup</li>
+                        <li>Unlimited Training</li>
+                        <li>1 Year Support</li>
+                    </ul>
+                    <a href="/contact" class="btn btn-primary btn-lg">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .page-header {
+        background: #2c3e50;
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        color: #bdc3c7;
+    }
+    
+    .packages-section {
+        padding: 4rem 0;
+    }
+    
+    .packages-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .package-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+    
+    .package-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .package-card.featured {
+        border: 3px solid #e74c3c;
+        transform: scale(1.05);
+    }
+    
+    .package-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #e74c3c;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    
+    .package-header {
+        background: #f8f9fa;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .package-header h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .package-price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+    
+    .package-content {
+        padding: 2rem;
+    }
+    
+    .package-features {
+        list-style: none;
+        margin-bottom: 2rem;
+    }
+    
+    .package-features li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .package-features li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #27ae60;
+        font-weight: bold;
+    }
+</style>
