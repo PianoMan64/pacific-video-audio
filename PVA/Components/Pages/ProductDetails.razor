@@ -1,0 +1,274 @@
+@page "/products/{ProductId:int}"
+@using PVA.Application.Services
+@using PVA.Core.Entities
+@using PVA.Core.Enums
+@inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject ILogger<ProductDetails> Logger
+
+<PageTitle>@(product?.Name ?? "Product") - Pacific Video & Audio</PageTitle>
+
+<div class="product-details-container">
+    @if (isLoading)
+    {
+        <div class="loading">Loading product details...</div>
+    }
+    else if (product == null)
+    {
+        <div class="not-found">
+            <h2>Product Not Found</h2>
+            <p>The requested product could not be found.</p>
+            <a href="/products" class="btn btn-primary">Back to Products</a>
+        </div>
+    }
+    else
+    {
+        <div class="product-header">
+            <div class="breadcrumb">
+                <a href="/products">Products</a> > <span class="category-badge">@product.Category</span> > @product.Name
+            </div>
+        </div>
+
+        <div class="product-content">
+            <div class="product-images">
+                @if (product.ImageUrls?.Any() == true)
+                {
+                    <div class="main-image">
+                        <img src="@selectedImage" alt="@product.Name" />
+                    </div>
+                    @if (product.ImageUrls.Count > 1)
+                    {
+                        <div class="image-gallery">
+                            @foreach (var imageUrl in product.ImageUrls)
+                            {
+                                <img src="@imageUrl" alt="@product.Name" 
+                                     class="thumbnail @(selectedImage == imageUrl ? "active" : "")" 
+                                     @onclick="() => SelectImage(imageUrl)" />
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-image-placeholder">
+                        <div class="no-image">No Image Available</div>
+                    </div>
+                }
+            </div>
+
+            <div class="product-info">
+                <h1>@product.Name</h1>
+                <p class="short-description">@product.ShortDescription</p>
+                
+                <div class="product-pricing">
+                    @if (product.CompareAtPrice.HasValue && product.CompareAtPrice > product.Price)
+                    {
+                        <div class="pricing-comparison">
+                            <span class="original-price">Regular Price: $@product.CompareAtPrice.Value.ToString("F2")</span>
+                            <span class="current-price">Sale Price: $@product.Price.ToString("F2")</span>
+                            <span class="savings">You Save: $@((product.CompareAtPrice.Value - product.Price).ToString("F2"))</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="price-only">
+                            <span class="current-price">Price: $@product.Price.ToString("F2")</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="product-availability">
+                    @if (product.TrackInventory)
+                    {
+                        @if (product.StockQuantity > 0)
+                        {
+                            <span class="availability-status available">✓ In Stock</span>
+                            <span class="stock-quantity">(@product.StockQuantity available)</span>
+                        }
+                        else
+                        {
+                            <span class="availability-status out-of-stock">✗ Out of Stock</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="availability-status available">✓ Available</span>
+                    }
+                </div>
+
+                <div class="product-actions">
+                    <AddToCartComponent ProductId="product.Id" isProductKit="false" OnItemAdded="OnCartUpdated" />
+                    <button class="btn btn-secondary" @onclick="GoBackToProducts">
+                        Back to Products
+                    </button>
+                </div>
+
+                <div class="product-specifications">
+                    <h3>Product Details</h3>
+                    <dl class="specs-list">
+                        <dt>Category</dt>
+                        <dd>@product.Category</dd>
+                        
+                        <dt>SKU</dt>
+                        <dd>@product.SKU</dd>
+                        
+                        @if (!string.IsNullOrEmpty(product.Brand))
+                        {
+                            <dt>Brand</dt>
+                            <dd>@product.Brand</dd>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(product.Model))
+                        {
+                            <dt>Model</dt>
+                            <dd>@product.Model</dd>
+                        }
+                        
+                        @if (product.Weight > 0)
+                        {
+                            <dt>Weight</dt>
+                            <dd>@product.Weight lbs</dd>
+                        }
+                        
+                        @if (product.Dimensions != null)
+                        {
+                            <dt>Dimensions</dt>
+                            <dd>@product.Dimensions</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        @if (product.Specifications?.Any() == true)
+        {
+            <div class="product-specifications-detailed">
+                <h2>Specifications</h2>
+                <dl class="specifications-list">
+                    @foreach (var spec in product.Specifications)
+                    {
+                        <dt>@spec.Key</dt>
+                        <dd>@spec.Value</dd>
+                    }
+                </dl>
+            </div>
+        }
+
+        @if (relatedProducts?.Any() == true)
+        {
+            <div class="related-products">
+                <h2>Related Products</h2>
+                <div class="related-products-grid">
+                    @foreach (var relatedProduct in relatedProducts)
+                    {
+                        <div class="related-product-card">
+                            <div class="related-product-image">
+                                @if (relatedProduct.ImageUrls?.Any() == true)
+                                {
+                                    <img src="@relatedProduct.ImageUrls.First()" alt="@relatedProduct.Name" />
+                                }
+                                else
+                                {
+                                    <div class="no-image">No Image</div>
+                                }
+                            </div>
+                            <div class="related-product-info">
+                                <h4>@relatedProduct.Name</h4>
+                                <p class="related-product-price">$@relatedProduct.Price.ToString("F2")</p>
+                                <button class="btn btn-small btn-primary" @onclick="() => ViewProduct(relatedProduct.Id)">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int ProductId { get; set; }
+    
+    private Product? product;
+    private List<Product>? relatedProducts;
+    private bool isLoading = true;
+    private string selectedImage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProductDetails();
+        await LoadRelatedProducts();
+        isLoading = false;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ProductId != product?.Id)
+        {
+            isLoading = true;
+            await LoadProductDetails();
+            await LoadRelatedProducts();
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadProductDetails()
+    {
+        try
+        {
+            product = await ProductService.GetProductByIdAsync(ProductId);
+            if (product?.ImageUrls?.Any() == true)
+            {
+                selectedImage = product.ImageUrls.First();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading product details for ID {ProductId}", ProductId);
+            product = null;
+        }
+    }
+
+    private async Task LoadRelatedProducts()
+    {
+        try
+        {
+            if (product != null)
+            {
+                // Get products from the same category, excluding the current product
+                var allProducts = await ProductService.GetAllProductsAsync();
+                relatedProducts = allProducts
+                    .Where(p => p.Category == product.Category && p.Id != product.Id)
+                    .Take(4)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading related products for product ID {ProductId}", ProductId);
+            relatedProducts = new List<Product>();
+        }
+    }
+
+    private void SelectImage(string imageUrl)
+    {
+        selectedImage = imageUrl;
+    }
+
+    private void ViewProduct(int productId)
+    {
+        Navigation.NavigateTo($"/products/{productId}");
+    }
+
+    private void GoBackToProducts()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+    private void OnCartUpdated()
+    {
+        // This method is called when an item is successfully added to cart
+        StateHasChanged();
+    }
+}

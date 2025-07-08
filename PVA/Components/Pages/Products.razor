@@ -88,9 +88,7 @@
                                 <button class="btn btn-primary" @onclick="() => ViewKitDetails(kit.Id)">
                                     View Kit Details
                                 </button>
-                                <button class="btn btn-secondary" @onclick="() => AddKitToCart(kit.Id)">
-                                    Add Kit to Cart
-                                </button>
+                                <AddToCartComponent ProductId="kit.Id" isProductKit="true" OnItemAdded="OnCartUpdated" />
                             </div>
                         </div>
                     </div>
@@ -141,9 +139,7 @@
                                 <button class="btn btn-primary" @onclick="() => ViewProductDetails(product.Id)">
                                     View Details
                                 </button>
-                                <button class="btn btn-secondary" @onclick="() => AddProductToCart(product.Id)">
-                                    Add to Cart
-                                </button>
+                                <AddToCartComponent ProductId="product.Id" isProductKit="false" OnItemAdded="OnCartUpdated" />
                             </div>
                         </div>
                     </div>
@@ -268,29 +264,10 @@
         Navigation.NavigateTo($"/kits/{kitId}");
     }
 
-    private void AddProductToCart(int productId)
+    private void OnCartUpdated()
     {
-        try
-        {
-            // TODO: Implement cart functionality
-            Logger.LogInformation("Adding product {ProductId} to cart", productId);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error adding product to cart");
-        }
-    }
-
-    private void AddKitToCart(int kitId)
-    {
-        try
-        {
-            // TODO: Implement cart functionality
-            Logger.LogInformation("Adding kit {KitId} to cart", kitId);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error adding kit to cart");
-        }
+        // This method is called when an item is successfully added to cart
+        // You could update UI state, refresh cart count, etc.
+        StateHasChanged();
     }
 }

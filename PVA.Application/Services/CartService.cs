@@ -9,12 +9,12 @@ namespace PVA.Application.Services;
 /// </summary>
 public class CartService : ICartService
 {
-    private readonly IRepository<CartItem> _cartRepository;
+    private readonly ICartRepository _cartRepository;
     private readonly IProductService _productService;
     private readonly ILogger<CartService> _logger;
 
     public CartService(
-        IRepository<CartItem> cartRepository,
+        ICartRepository cartRepository,
         IProductService productService,
         ILogger<CartService> logger)
     {
@@ -27,7 +27,7 @@ public class CartService : ICartService
     {
         try
         {
-            return await _cartRepository.FindAsync(ci => ci.CustomerId == customerId);
+            return await _cartRepository.GetCartItemsWithProductsAsync(customerId);
         }
         catch (Exception ex)
         {
@@ -40,8 +40,7 @@ public class CartService : ICartService
     {
         try
         {
-            var cartItems = await GetCartItemsAsync(customerId);
-            return cartItems.Sum(ci => ci.Quantity);
+            return await _cartRepository.GetCartItemCountAsync(customerId);
         }
         catch (Exception ex)
         {
@@ -54,8 +53,7 @@ public class CartService : ICartService
     {
         try
         {
-            var cartItems = await GetCartItemsAsync(customerId);
-            return cartItems.Sum(ci => ci.UnitPrice * ci.Quantity);
+            return await _cartRepository.GetCartTotalAsync(customerId);
         }
         catch (Exception ex)
         {
@@ -68,7 +66,7 @@ public class CartService : ICartService
     {
         try
         {
-            return await _cartRepository.FirstOrDefaultAsync(ci => ci.CustomerId == customerId && ci.ProductId == productId);
+            return await _cartRepository.GetCartItemWithProductAsync(customerId, productId);
         }
         catch (Exception ex)
         {
