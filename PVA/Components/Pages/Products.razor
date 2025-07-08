@@ -1,61 +1,296 @@
 @page "/products"
+@using PVA.Application.Services
+@using PVA.Core.Entities
+@using PVA.Core.Enums
+@inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject ILogger<Products> Logger
 
 <PageTitle>Products - Pacific Video & Audio</PageTitle>
 
-<section class="page-header">
-    <div class="container">
-        <h1>Our Products</h1>
-        <p>Professional video and audio equipment for every need</p>
+<div class="products-container">
+    <div class="products-header">
+        <h1>Product Catalog</h1>
+        <p>Discover our extensive range of professional audio and video equipment</p>
     </div>
-</section>
 
-<section class="products-section">
-    <div class="container">
-        <div class="product-categories">
-            <div class="category-card">
-                <div class="category-image">
-                    <img src="/images/video-equipment.jpg" alt="Video Equipment" />
-                </div>
-                <div class="category-content">
-                    <h3>Video Equipment</h3>
-                    <p>Professional cameras, monitors, recording devices, and complete video production solutions for every budget and requirement.</p>
-                    <a href="/products/video" class="btn btn-primary">Shop Video Equipment</a>
-                </div>
+    <div class="products-filters">
+        <div class="filter-row">
+            <div class="category-filter">
+                <label for="category">Category:</label>
+                <select id="category" @bind="selectedCategory" @bind:after="FilterProducts">
+                    <option value="">All Categories</option>
+                    @foreach (var category in Enum.GetValues<ProductCategory>())
+                    {
+                        <option value="@category">@category</option>
+                    }
+                </select>
             </div>
             
-            <div class="category-card">
-                <div class="category-image">
-                    <img src="/images/audio-equipment.jpg" alt="Audio Equipment" />
-                </div>
-                <div class="category-content">
-                    <h3>Audio Equipment</h3>
-                    <p>High-quality microphones, mixers, speakers, and professional audio recording systems for crystal-clear sound.</p>
-                    <a href="/products/audio" class="btn btn-primary">Shop Audio Equipment</a>
-                </div>
+            <div class="search-filter">
+                <label for="search">Search:</label>
+                <input type="text" id="search" @bind="searchTerm" @bind:after="FilterProducts" placeholder="Search products..." />
+            </div>
+            
+            <div class="view-toggle">
+                <button class="@(showKits ? "active" : "")" @onclick="() => ToggleView(true)">
+                    Product Kits
+                </button>
+                <button class="@(!showKits ? "active" : "")" @onclick="() => ToggleView(false)">
+                    Individual Products
+                </button>
             </div>
         </div>
     </div>
-</section>
 
-<style>
-    .page-header {
-        background: #2c3e50;
-        color: white;
-        padding: 4rem 0;
-        text-align: center;
+    @if (isLoading)
+    {
+        <div class="loading">Loading products...</div>
     }
-    
-    .page-header h1 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+    else if (showKits)
+    {
+        <div class="product-grid">
+            @if (productKits?.Any() == true)
+            {
+                @foreach (var kit in productKits)
+                {
+                    <div class="product-card kit-card">
+                        <div class="product-image">
+                            @if (!string.IsNullOrEmpty(kit.ImageUrl))
+                            {
+                                <img src="@kit.ImageUrl" alt="@kit.Name" />
+                            }
+                            else
+                            {
+                                <div class="no-image">No Image</div>
+                            }
+                            <div class="kit-badge">KIT</div>
+                        </div>
+                        <div class="product-info">
+                            <h3>@kit.Name</h3>
+                            <p class="description">@kit.ShortDescription</p>
+                            <div class="kit-items">
+                                <small>@kit.KitItems.Count items included</small>
+                            </div>
+                            <div class="pricing">
+                                @if (kit.DiscountAmount > 0 || kit.DiscountPercentage > 0)
+                                {
+                                    <span class="original-price">$@(kit.KitItems.Sum(i => i.Product.Price * i.Quantity).ToString("F2"))</span>
+                                    <span class="kit-price">$@kit.KitPrice.ToString("F2")</span>
+                                    <span class="savings">Save $@((kit.KitItems.Sum(i => i.Product.Price * i.Quantity) - kit.KitPrice).ToString("F2"))</span>
+                                }
+                                else
+                                {
+                                    <span class="kit-price">$@kit.KitPrice.ToString("F2")</span>
+                                }
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" @onclick="() => ViewKitDetails(kit.Id)">
+                                    View Kit Details
+                                </button>
+                                <button class="btn btn-secondary" @onclick="() => AddKitToCart(kit.Id)">
+                                    Add Kit to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-products">No product kits found.</div>
+            }
+        </div>
     }
-    
-    .page-header p {
-        font-size: 1.2rem;
-        color: #bdc3c7;
+    else
+    {
+        <div class="product-grid">
+            @if (products?.Any() == true)
+            {
+                @foreach (var product in products)
+                {
+                    <div class="product-card">
+                        <div class="product-image">
+                            @if (product.ImageUrls?.Any() == true)
+                            {
+                                <img src="@product.ImageUrls.First()" alt="@product.Name" />
+                            }
+                            else
+                            {
+                                <div class="no-image">No Image</div>
+                            }
+                        </div>
+                        <div class="product-info">
+                            <h3>@product.Name</h3>
+                            <p class="description">@product.Description</p>
+                            <div class="product-category">
+                                <span class="category-badge">@product.Category</span>
+                            </div>
+                            <div class="pricing">
+                                @if (product.CompareAtPrice > product.Price)
+                                {
+                                    <span class="original-price">$@(product.CompareAtPrice?.ToString("F2") ?? "0.00")</span>
+                                    <span class="current-price">$@product.Price.ToString("F2")</span>
+                                }
+                                else
+                                {
+                                    <span class="current-price">$@product.Price.ToString("F2")</span>
+                                }
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" @onclick="() => ViewProductDetails(product.Id)">
+                                    View Details
+                                </button>
+                                <button class="btn btn-secondary" @onclick="() => AddProductToCart(product.Id)">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-products">No products found.</div>
+            }
+        </div>
     }
-    
-    .products-section {
-        padding: 4rem 0;
+</div>
+
+@code {
+    private List<Product> products = new();
+    private List<ProductKit> productKits = new();
+    private bool isLoading = true;
+    private bool showKits = false;
+    private string selectedCategory = "";
+    private string searchTerm = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+        await LoadProductKits();
+        isLoading = false;
     }
-</style>
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            products = (await ProductService.GetAllProductsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading products");
+            products = new List<Product>();
+        }
+    }
+
+    private async Task LoadProductKits()
+    {
+        try
+        {
+            productKits = (await ProductService.GetAllProductKitsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading product kits");
+            productKits = new List<ProductKit>();
+        }
+    }
+
+    private void ToggleView(bool showKitsView)
+    {
+        showKits = showKitsView;
+    }
+
+    private async Task FilterProducts()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            if (showKits)
+            {
+                productKits = (await ProductService.GetAllProductKitsAsync()).ToList();
+                
+                // Apply category filter
+                if (!string.IsNullOrEmpty(selectedCategory) && Enum.TryParse<ProductCategory>(selectedCategory, out var category))
+                {
+                    productKits = productKits.Where(k => k.Category == category).ToList();
+                }
+                
+                // Apply search filter
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    productKits = productKits.Where(k => 
+                        k.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        k.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+            }
+            else
+            {
+                products = (await ProductService.GetAllProductsAsync()).ToList();
+                
+                // Apply category filter
+                if (!string.IsNullOrEmpty(selectedCategory) && Enum.TryParse<ProductCategory>(selectedCategory, out var category))
+                {
+                    products = products.Where(p => p.Category == category).ToList();
+                }
+                
+                // Apply search filter
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    products = products.Where(p => 
+                        p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error filtering products");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ViewProductDetails(int productId)
+    {
+        Navigation.NavigateTo($"/products/{productId}");
+    }
+
+    private void ViewKitDetails(int kitId)
+    {
+        Navigation.NavigateTo($"/kits/{kitId}");
+    }
+
+    private void AddProductToCart(int productId)
+    {
+        try
+        {
+            // TODO: Implement cart functionality
+            Logger.LogInformation("Adding product {ProductId} to cart", productId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adding product to cart");
+        }
+    }
+
+    private void AddKitToCart(int kitId)
+    {
+        try
+        {
+            // TODO: Implement cart functionality
+            Logger.LogInformation("Adding kit {KitId} to cart", kitId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adding kit to cart");
+        }
+    }
+}
