@@ -1,0 +1,60 @@
+@using PVA.Application.Services
+@inject CartStateService CartStateService
+@implements IDisposable
+
+<a href="/cart" class="nav-action cart-link" title="Shopping Cart">
+    <i class="icon-cart"></i>
+    <span class="cart-count" data-count="@cartItemCount">@cartItemCount</span>
+    @if (cartItemCount > 0)
+    {
+        <span class="cart-indicator"></span>
+    }
+</a>
+
+@code {
+    private int cartItemCount = 0;
+    private bool _isLoading = false;
+    private CancellationTokenSource _cancellationTokenSource = new();
+    
+    // For now, using a hardcoded customer ID. In real implementation, this would come from authentication
+    private const int CurrentCustomerId = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateCartCount();
+    }
+
+    public async Task UpdateCartCount()
+    {
+        if (_isLoading)
+            return;
+
+        try
+        {
+            _isLoading = true;
+            cartItemCount = await CartStateService.GetCartItemCountAsync(CurrentCustomerId);
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            // Silently handle errors during prerendering or concurrency issues
+            cartItemCount = 0;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    public async Task RefreshCartCount()
+    {
+        await CartStateService.RefreshCartAsync(CurrentCustomerId);
+        await UpdateCartCount();
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+    }
+}

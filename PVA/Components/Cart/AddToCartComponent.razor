@@ -1,0 +1,189 @@
+@using PVA.Application.Services
+@using PVA.Core.Entities
+@inject ICartService CartService
+@inject CartStateService CartStateService
+@inject IJSRuntime JSRuntime
+
+<div class="add-to-cart-component">
+    @if (isProductKit)
+    {
+        <div class="kit-add-to-cart">
+            <div class="quantity-selector">
+                <label for="kit-quantity-@ProductId">Quantity:</label>
+                <div class="quantity-controls">
+                    <button type="button" class="qty-btn" @onclick="DecreaseQuantity" disabled="@(quantity <= 1 || isAdding)">
+                        <i class="icon-minus"></i>
+                    </button>
+                    <input type="number" id="kit-quantity-@ProductId" @bind="quantity" min="1" max="10" class="qty-input" disabled="@isAdding" />
+                    <button type="button" class="qty-btn" @onclick="IncreaseQuantity" disabled="@(quantity >= 10 || isAdding)">
+                        <i class="icon-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary add-to-cart-btn" @onclick="AddKitToCart" disabled="@isAdding">
+                @if (isAdding)
+                {
+                    <i class="icon-spinner spinning"></i>
+                    <span>Adding...</span>
+                }
+                else
+                {
+                    <i class="icon-cart-plus"></i>
+                    <span>Add Kit to Cart</span>
+                }
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="product-add-to-cart">
+            <div class="quantity-selector">
+                <label for="product-quantity-@ProductId">Quantity:</label>
+                <div class="quantity-controls">
+                    <button type="button" class="qty-btn" @onclick="DecreaseQuantity" disabled="@(quantity <= 1 || isAdding)">
+                        <i class="icon-minus"></i>
+                    </button>
+                    <input type="number" id="product-quantity-@ProductId" @bind="quantity" min="1" max="99" class="qty-input" disabled="@isAdding" />
+                    <button type="button" class="qty-btn" @onclick="IncreaseQuantity" disabled="@(quantity >= 99 || isAdding)">
+                        <i class="icon-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary add-to-cart-btn" @onclick="AddProductToCart" disabled="@isAdding">
+                @if (isAdding)
+                {
+                    <i class="icon-spinner spinning"></i>
+                    <span>Adding...</span>
+                }
+                else
+                {
+                    <i class="icon-cart-plus"></i>
+                    <span>Add to Cart</span>
+                }
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int ProductId { get; set; }
+    [Parameter] public bool isProductKit { get; set; } = false;
+    [Parameter] public EventCallback OnItemAdded { get; set; }
+    
+    private int quantity = 1;
+    private bool isAdding = false;
+    
+    // For now, using a hardcoded customer ID. In real implementation, this would come from authentication
+    private const int CurrentCustomerId = 1;
+
+    private void IncreaseQuantity()
+    {
+        int maxQuantity = isProductKit ? 10 : 99;
+        if (quantity < maxQuantity)
+        {
+            quantity++;
+        }
+    }
+
+    private void DecreaseQuantity()
+    {
+        if (quantity > 1)
+        {
+            quantity--;
+        }
+    }
+
+    private async Task AddProductToCart()
+    {
+        try
+        {
+            isAdding = true;
+            await CartService.AddToCartAsync(CurrentCustomerId, ProductId, quantity);
+            
+            // Refresh the cart state after adding
+            await CartStateService.RefreshCartAsync(CurrentCustomerId);
+            
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", 
+                    $"Added {quantity} item(s) to cart!", "success");
+            }
+            catch
+            {
+                // Ignore JavaScript errors during prerendering
+            }
+            
+            // Reset quantity after successful add
+            quantity = 1;
+            
+            // Notify parent component
+            await OnItemAdded.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", 
+                    "Error adding to cart: " + ex.Message, "error");
+            }
+            catch
+            {
+                // Ignore JavaScript errors during prerendering
+            }
+        }
+        finally
+        {
+            isAdding = false;
+        }
+    }
+
+    private async Task AddKitToCart()
+    {
+        try
+        {
+            isAdding = true;
+            
+            // For kits, we need to add each component product individually
+            // This is a simplified implementation - in a real scenario, you might want
+            // to handle kit items differently or create a separate method
+            await CartService.AddToCartAsync(CurrentCustomerId, ProductId, quantity);
+            
+            // Refresh the cart state after adding
+            await CartStateService.RefreshCartAsync(CurrentCustomerId);
+            
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", 
+                    $"Added {quantity} kit(s) to cart!", "success");
+            }
+            catch
+            {
+                // Ignore JavaScript errors during prerendering
+            }
+            
+            // Reset quantity after successful add
+            quantity = 1;
+            
+            // Notify parent component
+            await OnItemAdded.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("showToast", 
+                    "Error adding kit to cart: " + ex.Message, "error");
+            }
+            catch
+            {
+                // Ignore JavaScript errors during prerendering
+            }
+        }
+        finally
+        {
+            isAdding = false;
+        }
+    }
+}
