@@ -3,6 +3,7 @@ using PVA.Components;
 using PVA.Core.Interfaces;
 using PVA.Infrastructure.Data;
 using PVA.Infrastructure.Repositories;
+using PVA.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,13 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+// Add Application Services
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IServicePackageService, ServicePackageService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

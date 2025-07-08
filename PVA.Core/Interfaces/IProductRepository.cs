@@ -13,6 +13,7 @@ public interface IProductRepository : IRepository<Product>
     Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm);
     Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId);
     Task<Product?> GetBySkuAsync(string sku);
+    Task<IEnumerable<Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice);
     Task<IEnumerable<Product>> GetLowStockProductsAsync(int threshold = 10);
     Task<IEnumerable<Product>> GetProductsWithReviewsAsync();
     Task<decimal> GetAverageRatingAsync(int productId);
