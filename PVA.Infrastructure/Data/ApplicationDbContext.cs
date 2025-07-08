@@ -13,6 +13,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<ProductKit> ProductKits { get; set; }
+    public DbSet<ProductKitItem> ProductKitItems { get; set; }
 
     // Customer Management
     public DbSet<Customer> Customers { get; set; }
@@ -234,6 +236,62 @@ public class ApplicationDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(sb => sb.ServicePackageId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure ProductKit entity
+        modelBuilder.Entity<ProductKit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.SKU).IsRequired().HasMaxLength(50);
+            entity.HasIndex(e => e.SKU).IsUnique();
+            entity.Property(e => e.KitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.DiscountAmount).HasPrecision(18, 2);
+            entity.Property(e => e.DiscountPercentage).HasPrecision(5, 2);
+            entity.Property(e => e.ShortDescription).HasMaxLength(500);
+            entity.Property(e => e.LongDescription).HasMaxLength(4000);
+            entity.Property(e => e.MetaTitle).HasMaxLength(200);
+            entity.Property(e => e.MetaDescription).HasMaxLength(500);
+            
+            // Configure enum conversion
+            entity.Property(e => e.Category).HasConversion<int>();
+            
+            // Configure complex properties as JSON
+            entity.Property(e => e.ImageUrls)
+                  .HasConversion(
+                      v => System.Text.Json.JsonSerializer.Serialize(v, new System.Text.Json.JsonSerializerOptions()),
+                      v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, new System.Text.Json.JsonSerializerOptions()) ?? new List<string>())
+                  .HasColumnType("nvarchar(max)");
+                  
+            entity.Property(e => e.Tags)
+                  .HasConversion(
+                      v => System.Text.Json.JsonSerializer.Serialize(v, new System.Text.Json.JsonSerializerOptions()),
+                      v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, new System.Text.Json.JsonSerializerOptions()) ?? new List<string>())
+                  .HasColumnType("nvarchar(max)");
+        });
+
+        // Configure ProductKitItem entity
+        modelBuilder.Entity<ProductKitItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Quantity).IsRequired();
+            entity.Property(e => e.OverridePrice).HasPrecision(18, 2);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+            
+            // Configure relationships
+            entity.HasOne(pki => pki.ProductKit)
+                  .WithMany(pk => pk.KitItems)
+                  .HasForeignKey(pki => pki.ProductKitId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(pki => pki.Product)
+                  .WithMany()
+                  .HasForeignKey(pki => pki.ProductId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            // Ensure unique combination of ProductKitId and ProductId
+            entity.HasIndex(e => new { e.ProductKitId, e.ProductId }).IsUnique();
         });
 
         // Configure BaseEntity properties for all entities

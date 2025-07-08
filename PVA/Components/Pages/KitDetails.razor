@@ -1,0 +1,200 @@
+@page "/kits/{KitId:int}"
+@using PVA.Application.Services
+@using PVA.Core.Entities
+@using PVA.Core.Enums
+@inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject ILogger<KitDetails> Logger
+
+<PageTitle>@(kit?.Name ?? "Product Kit") - Pacific Video & Audio</PageTitle>
+
+<div class="kit-details-container">
+    @if (isLoading)
+    {
+        <div class="loading">Loading kit details...</div>
+    }
+    else if (kit == null)
+    {
+        <div class="not-found">
+            <h2>Product Kit Not Found</h2>
+            <p>The requested product kit could not be found.</p>
+            <a href="/products" class="btn btn-primary">Back to Products</a>
+        </div>
+    }
+    else
+    {
+        <div class="kit-header">
+            <div class="breadcrumb">
+                <a href="/products">Products</a> > <a href="/products">Product Kits</a> > @kit.Name
+            </div>
+            <div class="kit-badge">PRODUCT KIT</div>
+        </div>
+
+        <div class="kit-content">
+            <div class="kit-images">
+                @if (!string.IsNullOrEmpty(kit.ImageUrl))
+                {
+                    <div class="main-image">
+                        <img src="@kit.ImageUrl" alt="@kit.Name" />
+                    </div>
+                }
+                @if (kit.ImageUrls?.Any() == true)
+                {
+                    <div class="image-gallery">
+                        @foreach (var imageUrl in kit.ImageUrls)
+                        {
+                            <img src="@imageUrl" alt="@kit.Name" class="thumbnail" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="kit-info">
+                <h1>@kit.Name</h1>
+                <p class="short-description">@kit.ShortDescription</p>
+                
+                <div class="kit-pricing">
+                    @if (kit.DiscountAmount > 0 || kit.DiscountPercentage > 0)
+                    {                    <div class="pricing-comparison">
+                        <span class="individual-price">Individual Price: $@(kit.KitItems.Sum(i => i.Product.Price * i.Quantity).ToString("F2"))</span>
+                        <span class="kit-price">Kit Price: $@kit.KitPrice.ToString("F2")</span>
+                        <span class="savings">You Save: $@((kit.KitItems.Sum(i => i.Product.Price * i.Quantity) - kit.KitPrice).ToString("F2"))</span>
+                    </div>
+                    }                else
+                {
+                    <div class="kit-price-only">
+                        <span class="kit-price">Kit Price: $@kit.KitPrice.ToString("F2")</span>
+                    </div>
+                }
+                </div>
+
+                <div class="kit-actions">
+                    <button class="btn btn-primary btn-large" @onclick="AddKitToCart">
+                        Add Complete Kit to Cart
+                    </button>
+                    <button class="btn btn-secondary" @onclick="() => showItemDetails = !showItemDetails">
+                        @(showItemDetails ? "Hide" : "Show") Kit Contents
+                    </button>
+                </div>
+
+                @if (kit.Tags?.Any() == true)
+                {
+                    <div class="kit-tags">
+                        @foreach (var tag in kit.Tags)
+                        {
+                            <span class="tag">@tag</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (showItemDetails)
+        {
+            <div class="kit-contents">
+                <h2>Kit Contents (@kit.KitItems.Count items)</h2>
+                <div class="kit-items-grid">
+                    @foreach (var item in kit.KitItems.OrderBy(i => i.SortOrder))
+                    {
+                        <div class="kit-item">
+                            <div class="item-image">
+                                @if (item.Product.ImageUrls?.Any() == true)
+                                {
+                                    <img src="@item.Product.ImageUrls.First()" alt="@item.Product.Name" />
+                                }
+                                else
+                                {
+                                    <div class="no-image">No Image</div>
+                                }
+                            </div>
+                            <div class="item-info">
+                                <h4>@item.Product.Name</h4>
+                                <p class="item-description">@item.Product.Description</p>
+                                <div class="item-details">
+                                    <span class="quantity">Quantity: @item.Quantity</span>
+                                    <span class="price">$@item.Product.Price.ToString("F2") each</span>
+                                    @if (item.OverridePrice.HasValue)
+                                    {
+                                        <span class="override-price">Kit Price: $@item.OverridePrice.Value.ToString("F2")</span>
+                                    }
+                                </div>
+                                @if (item.IsOptional)
+                                {
+                                    <span class="optional-badge">Optional</span>
+                                }
+                                @if (item.IsSubstitutable)
+                                {
+                                    <span class="substitutable-badge">Substitutable</span>
+                                }
+                                @if (!string.IsNullOrEmpty(item.Notes))
+                                {
+                                    <p class="item-notes">@item.Notes</p>
+                                }
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn btn-small btn-secondary" @onclick="() => ViewProductDetails(item.Product.Id)">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(kit.LongDescription))
+        {
+            <div class="kit-description">
+                <h2>Description</h2>
+                <div class="description-content">
+                    @((MarkupString)kit.LongDescription)
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int KitId { get; set; }
+    
+    private ProductKit? kit;
+    private bool isLoading = true;
+    private bool showItemDetails = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadKitDetails();
+        isLoading = false;
+    }
+
+    private async Task LoadKitDetails()
+    {
+        try
+        {
+            kit = await ProductService.GetProductKitByIdAsync(KitId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading kit details for ID {KitId}", KitId);
+            kit = null;
+        }
+    }
+
+    private void AddKitToCart()
+    {
+        try
+        {
+            // TODO: Implement cart functionality
+            Logger.LogInformation("Adding kit {KitId} to cart", KitId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adding kit to cart");
+        }
+    }
+
+    private void ViewProductDetails(int productId)
+    {
+        Navigation.NavigateTo($"/products/{productId}");
+    }
+}
