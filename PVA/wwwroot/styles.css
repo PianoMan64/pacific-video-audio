@@ -58,8 +58,8 @@ body {
 }
 
 .logo {
-    height: 40px;
-    margin-right: 10px;
+    height: 80px;
+    width: auto;
 }
 
 .brand-text {
@@ -635,6 +635,14 @@ section {
         display: flex;
     }
     
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+    
+    .logo {
+        height: 65px;
+    }
+    
     .hero-title {
         font-size: 2.5rem;
     }
@@ -671,6 +679,14 @@ section {
 @media (max-width: 480px) {
     .container {
         padding: 0 15px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .logo {
+        height: 50px;
     }
     
     .hero-title {
